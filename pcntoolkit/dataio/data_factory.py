@@ -299,6 +299,7 @@ def load_lnm(save_path: str | None = None) -> NormData:
     data_path = os.path.join(save_path, "LNM_data.csv")
 
     if not os.path.exists(data_path):
+        # Download the LNM dataset if it does not exist locally
         data = pd.read_csv(_LNM_DATA_URL)
         data.to_csv(data_path, index=False)
     else:
@@ -307,6 +308,7 @@ def load_lnm(save_path: str | None = None) -> NormData:
     subject_ids = "sub_id"
     covariates = ["age"]
     batch_effects = ["sex", "site"]
+    # Trick: automatically determine response variables as the ones that are not metadata columns
     response_vars = [column for column in data.columns if column not in _LNM_METADATA_COLUMNS]
 
     norm_data = NormData.from_dataframe(
@@ -316,7 +318,7 @@ def load_lnm(save_path: str | None = None) -> NormData:
         batch_effects=batch_effects,
         response_vars=response_vars,
         subject_ids=subject_ids,
-        visits="visit",
+        visits="visit", # specify the visit columm
         remove_Nan=True,
     )
     return norm_data
